@@ -21,8 +21,8 @@ before_action :authenticate
     end
 
     def authenticate
-     authenticate_or_request_with_http_token do |token, email|
-       User.exists?(api_token: token, email: email)
+     authenticate_or_request_with_http_token do |token, options={}|
+       User.exists?(api_token: token, email: options[:email])
      end
    end
 end

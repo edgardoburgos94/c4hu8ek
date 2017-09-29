@@ -1,4 +1,7 @@
 class Api::V1::PinsController < ApplicationController
+
+before_action :authenticate
+
   def index
     render json: Pin.all.order('created_at DESC')
   end
@@ -16,4 +19,10 @@ class Api::V1::PinsController < ApplicationController
     def pin_params
       params.require(:pin).permit(:title, :image_url)
     end
+
+    def authenticate
+     authenticate_or_request_with_http_token do |token, email|
+       User.exists?(api_token: token, email: email)
+     end
+   end
 end

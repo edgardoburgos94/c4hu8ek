@@ -1,6 +1,6 @@
 class Api::V1::PinsController < ApplicationController
 
-before_action :authenticate
+  before_action :authenticate
 
   def index
     render json: Pin.all.order('created_at DESC')
@@ -16,13 +16,16 @@ before_action :authenticate
   end
 
   private
-    def pin_params
-      params.require(:pin).permit(:title, :image_url)
-    end
+  def pin_params
+    params.require(:pin).permit(:title, :image_url)
+  end
 
-    def authenticate
-     authenticate_or_request_with_http_token do |token, options={}|
-       User.exists?(api_token: token, email: options[:email])
-     end
-   end
+  def authenticate
+    email = request.headers['X-User-Email']
+    token = request.headers['X-Api-Token']
+    puts "EMAIL: #{email}, TOKEN: #{token}"
+    permision = User.exists?(api_token: request.headers['X-Api-Token'], email: request.headers['X-User-Email'])
+    puts "IS IT VALID??? WELL WELL LETS SEE..... #{permision}"
+    head :unauthorized unless permision
+  end
 end
